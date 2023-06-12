@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://finleytang.github.io</id>
+    <title>FinleyTang</title>
+    <updated>2023-06-12T11:52:03.500Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://finleytang.github.io"/>
+    <link rel="self" href="https://finleytang.github.io/atom.xml"/>
+    <subtitle>温故而知新</subtitle>
+    <logo>https://finleytang.github.io/images/avatar.png</logo>
+    <icon>https://finleytang.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2023, FinleyTang</rights>
+    <entry>
+        <title type="html"><![CDATA[git  流程]]></title>
+        <id>https://finleytang.github.io/post/git-liu-cheng/</id>
+        <link href="https://finleytang.github.io/post/git-liu-cheng/">
+        </link>
+        <updated>2023-06-12T10:37:15.000Z</updated>
+        <content type="html"><![CDATA[<p>echo &quot;# jsonValidator&quot; &gt;&gt; README.md<br>
+git init<br>
+git add *<br>
+git commit -m &quot;first commit&quot;<br>
+git branch -M main<br>
+git remote add origin https://github.com/FinleyTang/jsonValidator.git<br>
+git remote set-url origin https://https://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@github.com/FinleyTang/jsonValidator.git<br>
+8LVHbIPaB0OX0fXEk9@github.com/FinleyTang/jsonValidator.git<br>
+git push -u origin main</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[工作说明]]></title>
+        <id>https://finleytang.github.io/post/gong-zuo-shuo-ming/</id>
+        <link href="https://finleytang.github.io/post/gong-zuo-shuo-ming/">
+        </link>
+        <updated>2023-06-09T04:31:15.000Z</updated>
+        <content type="html"><![CDATA[<p>本周工作简单说明：<br>
+佩儒和昶希做他那部分的规则，  完成规则24条/88条，未完成64条， 完成时间估计较长</p>
+<p>汤飞、 牛超：<br>
+牛超前期辅助研发针对nanrui测试提供规则、用例并进行测试<br>
+后期投入规则测试，和汤飞共完成 30/52条，未完成22条，  一周可完成</p>
+<p>总共：完成 54/140条， 未完成86条</p>
+<p>如果没有其他安排，以上人员可安排继续进行规则测试验证</p>
+<p>巨田：<br>
+本周：windows下bind，mysql，nginx, redis, tomcat应用配置风险的”检查方法“细化<br>
+下周待做<br>
+1.基线规则统一管理，规则ID格式内容根据目前中心入库标准设计，与研发讨论确定方案<br>
+2.基线规则优化，统一规则ID<br>
+3.docker风险检测脚本规范化问题</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[[译文分享] 使用epf和无监督学习自编码器的进程行为异常检测]]></title>
+        <id>https://finleytang.github.io/post/yi-wen-fen-xiang-shi-yong-epf-he-wu-jian-du-xue-xi-zi-bian-ma-qi-de-jin-cheng-xing-wei-yi-chang-jian-ce/</id>
+        <link href="https://finleytang.github.io/post/yi-wen-fen-xiang-shi-yong-epf-he-wu-jian-du-xue-xi-zi-bian-ma-qi-de-jin-cheng-xing-wei-yi-chang-jian-ce/">
+        </link>
+        <updated>2023-06-08T10:30:10.000Z</updated>
+        <content type="html"><![CDATA[<p>在这篇文章中，我将描述如何以一种创造性的方式使用epf系统调用跟踪，以便使用一种称为自动编码器的无监督学习模型在运行时检测进程行为异常。<br>
+虽然许多项目通过构建一个允许的系统调用列表并在运行时检查进程是否使用了这个列表之外的任何东西来解决这个问题，但我们将使用一种方法，它不仅可以避免显式编译这个列表，而且还可以考虑到进程使用通常允许的、但仅在每秒使用一定范围内的系统调用的速度有多快。这种技术可以潜在地检测到进程利用、拒绝服务和其他几种类型的攻击。</p>
+<h2 id="ebpf是什么">eBPF是什么?</h2>
+<p>epf是一种技术，它允许在不使用内核模块的情况下截取Linux内核运行时的多个方面。epf的核心是一个运行在内核内部的虚拟机，它在加载epf程序操作码之前对其执行完整性检查，以确保运行时安全。<br>
+<img src="https://finleytang.github.io/post-images/1686220319499.PNG" alt="" loading="lazy"></p>
+<h2 id="使用epf的系统调用跟踪">使用epf的系统调用跟踪</h2>
+<p>使用epf跟踪系统调用的通常方法包括在我们想要拦截的每个系统调用上创建一个跟踪点或一个kprobe，以某种方式获取调用的参数，然后使用性能缓冲区或环形缓冲区将每个参数单独报告给用户空间。虽然这个方法非常适合单独跟踪每个系统调用并检查它们的参数(例如，检查正在访问哪些文件或程序连接到哪些主机)，但它有几个问题。</p>
+<p>首先，根据系统架构和内核编译标志的不同，读取每个系统调用的参数相当棘手。例如，在某些情况下，不可能在进入系统调用时读取参数，而只能在系统调用执行之后，通过保存kprobe中的指针，然后从kretprobe中读取它们。另一个重要的问题是eBPF缓冲吞吐量:当目标进程在短时间内执行大量系统调用时(想象一下处于严重压力下的HTTP服务器，或执行大量I/O的进程)，事件可能因此丢失。</p>
+<p>因为我们对系统调用参数不感兴趣，所以我们将使用一种不存在上述问题的替代方法。主要思想非常非常简单:我们将在sys_enter事件上有一个跟踪点，在每次执行任何系统调用时被触发</p>
+<p>我们不会立即通过缓冲区向用户空间报告调用，而是只增加数组中的相对整数槽位，从而创建一个直方图。</p>
+<p>该数组长度为512个整数(512设置为系统调用的最大恒定次数)，因此(例如)系统调用read (number 0)执行两次，mprotect (number 10)执行一次之后，我们将得到一个如下所示的向量/直方图:<br>
+<code>2,0,0,0,0,0,0,0,0,0,1,0,0,0,..........</code></p>
+<p>相对的epf非常简单，看起来像这样:</p>
+<pre><code>// defines a per-cpu array in order to avoid race coinditions while updating the histogram
+BPF_PERCPU_ARRAY(histogram, u32, MAX_SYSCALLS);
+
+// here's our tracepoint on sys_enter
+TRACEPOINT_PROBE(raw_syscalls, sys_enter)
+{
+    // filter by target pid and return if this activity belongs to a process we're not interested in
+    u64 pid = bpf_get_current_pid_tgid() &gt;&gt; 32;
+    if(pid != TARGET_PID) {
+        return 0;
+    }
+
+    // populate the histogram, args-&gt;id contains the system call number
+    u32 key = (u32)args-&gt;id;
+    u32 value = 0, *pval = NULL;
+    pval = histogram.lookup_or_try_init(&amp;key, &amp;value);
+    if(pval) {
+        *pval += 1;
+    }
+
+    return 0;
+}
+</code></pre>
+<p>到目前为止，没有执行数据到用户空间的传输，因此没有丢失任何系统调用，并且在这个直方图中对所有内容进行了说明。</p>
+<p>然后，我们将每100毫秒从用户空间对这个向量执行一次简单的轮询，通过将该向量与它的前一个状态进行比较，我们将计算每次系统调用的变化率:</p>
+<pre><code># polling loop
+while 1:
+    # get single histogram from per-cpu arrays
+    histogram = [histo_map[s] for s in range(0, MAX_SYSCALLS)]
+    # if any change happened
+    if histogram != prev:
+        # compute the rate of change for every syscall
+        deltas = [ 1.0 - (prev[s] / histogram[s]) if histogram[s] != 0.0 else 0.0 for s in range(0, MAX_SYSCALLS)]
+        prev = histogram
+
+    # ... SNIPPET ...
+
+    time.sleep(args.time / 1000.0)
+</code></pre>
+<p>这不仅需要考虑执行哪些系统调用(以及没有执行的系统调用，因此计数器总是为0)，还需要考虑在给定时间内的正常活动中执行它们的速度。 一旦我们将这些数据保存到CSV文件中，我们就可以训练一个能够在运行时检测异常的模型。</p>
+<h2 id="使用自动编码器进行异常检测">使用自动编码器进行异常检测</h2>
+<p>自动编码器是一种用于无监督学习任务的人工神经网络，能够创建无标记数据(因此称为“无监督”)的内部表示，并产生相同大小的输出。这种方法可以用于数据压缩(因为内部编码层通常比输入层小)，当然也可以用于异常检测，就像我们的例子一样。</p>
+<figure data-type="image" tabindex="1"><img src="https://finleytang.github.io/post-images/1686220912412.png" alt="" loading="lazy"></figure>
+<p>主要思想是训练模型，并使用我们的CSV数据集作为网络的输入和期望的输出。这样，人工神经网络将通过正确地重构每个向量来学习数据集中的“正常”。当输出向量与输入向量有很大不同时，我们就会知道这是一个异常，因为人工神经网络没有经过训练来重建这个特定的向量，这意味着它在我们认为的正常活动之外。</p>
+<p>我们的自动编码器有512个输入(定义为MAX_SYSCALLS常量)和相同数量的输出，而内部表示层的大小是它的一半:</p>
+<pre><code>n_inputs = MAX_SYSCALLS
+
+# input layer
+inp = Input(shape=(n_inputs,))
+# encoder layer
+encoder = Dense(n_inputs)(inp)
+encoder = ReLU()(encoder)
+# internal representation layer
+middle = Dense(int(n_inputs / 2))(encoder)
+# decoder layer
+decoder = Dense(n_inputs)(middle)
+decoder = ReLU()(decoder)
+decoder = Dense(n_inputs, activation='linear')(decoder)
+m = Model(inp, decoder)
+
+# we use mean square error as the loss function as we're interested in the reconstruction error
+m.compile(optimizer='adam', loss='mse')
+</code></pre>
+<p>对于训练，我们的CSV数据集被分割为训练数据和测试/验证数据。训练后，后者用于计算模型对“正常”数据提出的最大重构误差:</p>
+<pre><code># test the model on test data to calculate the error threshold
+y_test = model.predict(test)
+test_err = []
+# for each vector
+for ind in range(len(test)):
+   # get the absolute error as a difference of the input and reconstructed output
+   abs_err = np.abs(test[ind, :]-y_test[ind, :])
+   # append the sum of each individual error
+   test_err.append(abs_err.sum())
+# the threshold will be the maximum cumulative error we've found
+threshold = max(test_err)
+</code></pre>
+<p>我们现在有了一个自动编码器和它的参考错误阈值，我们可以使用它来执行实时异常检测。</p>
+<p><a href="https://www.evilsocket.net/2022/08/15/Process-behaviour-anomaly-detection-using-eBPF-and-unsupervised-learning-Autoencoders/">使用epf和无监督学习自编码器的进程行为异常检测</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[一花独放不是春]]></title>
+        <id>https://finleytang.github.io/post/yi-hua-du-fang-bu-shi-chun/</id>
+        <link href="https://finleytang.github.io/post/yi-hua-du-fang-bu-shi-chun/">
+        </link>
+        <updated>2023-06-08T01:57:43.000Z</updated>
+        <content type="html"><![CDATA[<p>吹灭别人的灯，并不会让自己更加光明；阻挡别人的路，也不会让自己行得更远。<br>
+“一花独放不是春，百花齐放春满园。”如果世界上只有一种花朵，就算这种花朵再美，那也是单调的。<br>
+以上两则材料出自习近平总书记的讲话，以生动形象的语言说出了普遍的道理。请据此写一篇文章，体现你的认识与思考。<br>
+要求：选准角度，确定立意，明确文体，自拟标题；不要套作，不得抄袭；不得泄露个人信息；不少于800字。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[[技术总结] 提权检测梳理]]></title>
+        <id>https://finleytang.github.io/post/ji-zhu-zong-jie-ti-quan-jian-ce-shu-li/</id>
+        <link href="https://finleytang.github.io/post/ji-zhu-zong-jie-ti-quan-jian-ce-shu-li/">
+        </link>
+        <updated>2023-06-07T08:17:21.000Z</updated>
+        <content type="html"><![CDATA[<p>https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Linux%20-%20Privilege%20Escalation.md</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[[论文笔记]基于异构观测链的容器逃逸检测方法]]></title>
+        <id>https://finleytang.github.io/post/lun-wen-bi-ji-ji-yu-yi-gou-guan-ce-lian-de-rong-qi-tao-yi-jian-ce-fang-fa/</id>
+        <link href="https://finleytang.github.io/post/lun-wen-bi-ji-ji-yu-yi-gou-guan-ce-lian-de-rong-qi-tao-yi-jian-ce-fang-fa/">
+        </link>
+        <updated>2023-06-07T07:00:49.000Z</updated>
+        <content type="html"><![CDATA[<p>容器逃逸是指攻击者利用程序、系统的漏洞或缺陷，突破容器与宿主机之间的隔离机制，获得在宿主机上的命令执行能力。目前，导致容器逃逸的<strong>主要因素包括配置不当、应用程序漏洞和系统内核漏洞</strong>。相比于前两者，系统内核漏洞导致的逃逸危害更大、威胁更广。这是因为容器与宿主机共用一个内核，攻击者可以利用内核漏洞进行攻击，从而突破隔离“逃逸”至宿主机，对宿主机和其他容器造成了极大的安全威胁。</p>
+<h2 id="主要贡献">主要贡献</h2>
+<p>本文的主要贡献总结如下。</p>
+<ol>
+<li>首先调研并复现了 10 个利用内核漏洞（CVE-2016-5195、CVE-2017-7308、CVE-2017-11176、<br>
+CVE-2017-18344、CVE-2017-1000112、CVE-2018-18955、CVE-2020-14386、CVE-2021-22555、CVE-2022- 0185、CVE-2022-0847）的容器逃逸案例，对利用内核漏洞的容器逃逸流程进行建模，提炼出容器逃逸行为的主要观测点和基于“权限提升”的容器逃逸检测标准。</li>
+<li>利用 Linux 内核模块实现了对容器进程操作行为的捕获和进程属性信息的提取，进一步生成了进程起源图。</li>
+<li>提出异构观测的检测方法，基于容器进程起源图和观测点构建异构观测链，从多个角度对容器进程所执行的操作进行全生命周期的异构观测，检测是否有权限提升的情况。</li>
+<li>为了验证系统的有效性，选取 4 个具有代表性的容器逃逸内核漏洞，并与容器逃逸检测工具<br>
+NS-Detector 进行对比。其中，利用这 4 个漏洞实现的容器逃逸涵盖了本文总结出的两类逃逸方式：直接逃逸和间接逃逸。</li>
+</ol>
+<p><em>我的主要关注点在于：主要观测点有哪些？ 如何从多个角度对容器进程所执行的操作进行全生命周期的异构观测，进而检测权限提升</em></p>
+<h2 id="相关工作">相关工作</h2>
+<p>Lin 等提出的利用内核漏洞的提权一般包含 4 个步骤：绕过内核地址空间布局随机化（KASLR, kernel address space layout randomization）、绕过管理模式访问保护（SMAP supervisor mode access prevention）和管理模式执行保护SMEP，supervisor mode execution prevention、覆盖内核函数指针劫持控制流和调用内核函数 commit_creds()。</p>
+<p>Lin 等认为前 3 个步骤很难直接检测，所以提出通过检测进程是否调用函数 commit_creds()来阻止容器内进程的提权行为。但是，<strong>在实践中存在一些其他的内核提权方法，并不会通过调用函数 comm_cred()来进行提权</strong>。比如，攻击者可以利用 Linux 内核写时复制（copy-on-write）中的条件竞争漏洞，绕过虚拟动态共享对象（vDSO, virtual dynamic shared object）对进程内存权限的限制，漏洞利用代码（shellcode）注入 vDSO 实现提权并逃逸。</p>
+<p>Jian 等提出了一种基于进程所属namespaces状态变化的方案NS-Detector（namespaces<br>
+detector）来检测 Docker 容器的逃逸行为。Jian 等认为，当攻击者从容器中逃逸至宿主机并获得一个可控的 shell 时，该进程仍属于容器中进程的子进程，但其 namespaces 已突破容器与宿主机间的隔离，属于宿主机进程的 namespaces</p>
+<p>该方案主要存在 2 个缺陷：一是检测滞后性，因为容器逃逸通常在最后一步才会突破 namespaces 的隔离；二是检测失效性，攻击者在容器内利用内核漏洞提权并获得对宿主机目录操作权限后，可以通过服务 cron 创建定时任务的方式来获取一个反弹 shell，实现“间接”容器逃逸。此时，获得的可控 shell 与容器中进程无直接关系，该方案不能检测出此类型的容器逃逸。</p>
+<h2 id="预备知识">预备知识</h2>
+<p>当进程在内核态时，可以直接访问操作系统内核中与进程属性相关的数据结构。因此，攻击者可以利用内核漏洞劫持控制流来执行恶意代码修改容器进程与权限相关的数据结构，从而提升容器进程的权限，进一步实现逃逸<br>
+<img src="https://finleytang.github.io/post-images/1686122627693.png" alt="" loading="lazy"><br>
+<strong>task_struct</strong>：内核中与进程管理和控制相关最重要的数据结构。该结构体伴随进程整个生命周期，记录进程的当前状态以及控制进程运行的全部信息（打开的文件、信号量、进程状态、地址空间等）</p>
+<p><strong>cred</strong>：系统通过该结构体控制进程对其他资源的操作权限判定。当进程操作消息队列、共享内存和信息量等数据对象时，系统需要对进程的 euid、egid 进行检查；当进程执行文件相关的操作时，系统需要对进程的 fsuid、fsgid 进行检查。同时，Linux使用能力（capability）机制，以细粒度方式控制普通进程能否执行特权操作。例如，进程要挂载（mount）一个文件系统，那么进程需要有对应capability即 CAP_SYS_ADMIN。</p>
+<p><strong>fs_struct</strong>：用于描述进程的文件系统信息。结构体中的root和pwd分别代表进程的根目录和当前工作目录。</p>
+<p><strong>nsproxy</strong>：用于描述进程各个 namespaces 的状态。其中，pid namespaces 为进程提供了一个具有独立进程 ID 的运行环境。在每一个 pid namespaces 中，进程的 pid 从 1 开始编号，且和其他 pidnamespaces 中的 pid 互不影响。</p>
+<p><strong>根据逃逸后获取的 root 权限进程（shell）是否为容器中进程的子进程，将容器逃逸分为两类：直接逃逸和间接逃逸</strong></p>
+<p>直接逃逸在直接逃逸中，攻击者在劫持内核控制流之后一般会提升当前容器进程的权限，确保逃逸后可以获得 root 权限的进程。</p>
+<h2 id="检测示例">检测示例</h2>
+<h3 id="cve-2017-7308">CVE-2017-7308</h3>
+<p>该内核漏洞进一步实现容器逃逸的攻击流程如下：</p>
+<ol>
+<li>
+<p>通过/proc/kallsyms 或 syslog 的方式泄露内核函数地址来获得内核的加载基址，绕过内核KASLR 保护机制。</p>
+</li>
+<li>
+<p>构造堆布局触发内核处理环形缓冲区代码packet_set_ring()中的堆溢出漏洞。</p>
+</li>
+<li>
+<p>覆盖 packet_socket 结构体中的 retire_blk_timer 字段，使该字段中的函数指针 func 指向<br>
+native_write_cr4()。同时，覆盖该字段中的 data 为函数 native_write_cr4()的参数。若计时器超时，执行 native_write_cr4()来禁用 SMEP 和 SMAP。</p>
+</li>
+<li>
+<p>以同样的方式构造堆溢出，覆盖packet_sock中的 xmit 字段，使其指向攻击载荷函数 get_root_<br>
+payload()。</p>
+</li>
+<li>
+<p>在 get_root_payload() 函数中首先执行commit_creds()来提升容器内当前进程的权限；然后，执行 switch_task_namespaces()来切换容器内已提权进程的 namespaces，实现逃逸</p>
+</li>
+</ol>
+<p>攻击者通过运行逃逸攻击程序 exploit 获得一个 root 权限的进程（pid=3046）<br>
+<img src="https://finleytang.github.io/post-images/1686128688624.png" alt="" loading="lazy"></p>
+<p>由于获得的逃逸进程（pid=3046）是容器中进程（pid=3045）的子进程，且两者的 namespaces 不一致</p>
+<p><strong>权限提升了之后为什么还要切换namespaces , 不是直接可以访问其他namespaces的内容吗？</strong></p>
+<p>是的，提升权限之后本来就可以访问其他namespaces的内容了。但是，在容器逃逸攻击中，攻击者需要通过切换namespaces来实现从容器内部到宿主机操作系统的跨越，从而突破容器隔离环境，进一步实现逃逸。</p>
+<p>具体来说，当攻击者成功提升权限后，仍然处于容器内部的环境中，只能访问当前容器的资源和namespaces。如果要绕过容器隔离直接与宿主机系统交互，就需要将当前进程移动到宿主机的namespace中。因此，攻击者需要调用 switch_task_namespaces()函数来切换namespaces，将当前进程的命名空间更改为宿主机系统的命名空间，从而达到突破容器隔离的目的。</p>
+<p>总之，虽然在权限提升后攻击者已经具备了访问其他namespaces的能力，但是由于受限于容器隔离等因素，攻击者仍需通过切换namespaces等方式来实现进一步跨越隔离环境的操作</p>
+<h2 id="问题答疑">问题答疑</h2>
+<p><strong>通过/proc/kallsyms 或 syslog 的方式泄露内核函数地址来获得内核的加载基址，绕过内核<br>
+KASLR 保护机制，这个是如何做到的？</strong></p>
+<p>核地址空间随机化（KASLR）是一种保护机制，通过随机化内核的加载基址，来防止攻击者利用预先计算好的偏移量等方式来执行攻击。但是，如果攻击者能够泄露内核函数地址，就可以绕过KASLR保护机制，获取内核的加载基址，并在此基础上进行攻击。</p>
+<p>攻击者可以通过以下两种方式来泄露内核函数地址：</p>
+<p>通过/proc/kallsyms文件来获得内核函数地址：/proc/kallsyms是一个虚拟文件系统，提供了系统中所有已加载模块和内核符号表的信息。攻击者可以读取/proc/kallsyms文件，获取到内核中所有的函数地址并进行分析，从而找到相关漏洞入口点等。</p>
+<p>通过syslog方式来获得内核函数地址：攻击者可以通过打印内核日志的方式，将内核中关键函数的地址输出到系统日志中。然后再通过解析系统日志，获取这些地址信息，从而实现对内核的攻击。</p>
+<p>无论使用哪种方式，攻击者都可以通过泄露内核函数地址，获取内核的加载基址，并绕过KASLR保护机制，从而实现进一步攻击。因此，在使用Linux系统时，需要注意加强内核安全管理，避免内核漏洞的出现，同时也要注意加强日志监控和安全审计，及时发现泄露内核函数地址等问题。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[测试使用Gridea]]></title>
+        <id>https://finleytang.github.io/post/ce-shi-shi-yong-gridea/</id>
+        <link href="https://finleytang.github.io/post/ce-shi-shi-yong-gridea/">
+        </link>
+        <updated>2023-06-07T06:46:18.000Z</updated>
+        <content type="html"><![CDATA[<p>感觉这个还挺方便，之前直接用github pages， 每次都要先push然后再看效果，无法预览，这次试一下看看效果</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Hello Gridea]]></title>
+        <id>https://finleytang.github.io/post/hello-gridea/</id>
+        <link href="https://finleytang.github.io/post/hello-gridea/">
+        </link>
+        <updated>2018-12-11T16:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
+✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
+✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+<!-- more -->
+<p><a href="https://github.com/getgridea/gridea">Github</a><br>
+<a href="https://gridea.dev/">Gridea 主页</a><br>
+<a href="https://fehey.com/">示例网站</a></p>
+<h2 id="特性">特性👇</h2>
+<p>📝  你可以使用最酷的 <strong>Markdown</strong> 语法，进行快速创作</p>
+<p>🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片</p>
+<p>🏷️  你可以对文章进行标签分组</p>
+<p>📋  你可以自定义菜单，甚至可以创建外部链接菜单</p>
+<p>💻  你可以在 <strong>Windows</strong>，<strong>MacOS</strong> 或 <strong>Linux</strong> 设备上使用此客户端</p>
+<p>🌎  你可以使用 <strong>𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌</strong> 或 <strong>Coding Pages</strong> 向世界展示，未来将支持更多平台</p>
+<p>💬  你可以进行简单的配置，接入 <a href="https://github.com/gitalk/gitalk">Gitalk</a> 或 <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a> 评论系统</p>
+<p>🇬🇧  你可以使用<strong>中文简体</strong>或<strong>英语</strong></p>
+<p>🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力</p>
+<p>🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步</p>
+<p>🌱 当然 <strong>Gridea</strong> 还很年轻，有很多不足，但请相信，它会不停向前 🏃</p>
+<p>未来，它一定会成为你离不开的伙伴</p>
+<p>尽情发挥你的才华吧！</p>
+<p>😘 Enjoy~</p>
+]]></content>
+    </entry>
+</feed>

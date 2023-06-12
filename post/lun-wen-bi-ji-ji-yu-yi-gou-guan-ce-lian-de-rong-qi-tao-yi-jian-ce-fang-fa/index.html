@@ -1,0 +1,243 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>[论文笔记]基于异构观测链的容器逃逸检测方法 | FinleyTang</title>
+<link rel="shortcut icon" href="https://finleytang.github.io/favicon.ico?v=1686570719428">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://finleytang.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="[论文笔记]基于异构观测链的容器逃逸检测方法 | FinleyTang - Atom Feed" href="https://finleytang.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="容器逃逸是指攻击者利用程序、系统的漏洞或缺陷，突破容器与宿主机之间的隔离机制，获得在宿主机上的命令执行能力。目前，导致容器逃逸的主要因素包括配置不当、应用程序漏洞和系统内核漏洞。相比于前两者，系统内核漏洞导致的逃逸危害更大、威胁更广。这是因..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://finleytang.github.io">
+  <img class="avatar" src="https://finleytang.github.io/images/avatar.png?v=1686570719428" alt="">
+  </a>
+  <h1 class="site-title">
+    FinleyTang
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              [论文笔记]基于异构观测链的容器逃逸检测方法
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-06-07
+              </span>
+              <span>
+                10 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>容器逃逸是指攻击者利用程序、系统的漏洞或缺陷，突破容器与宿主机之间的隔离机制，获得在宿主机上的命令执行能力。目前，导致容器逃逸的<strong>主要因素包括配置不当、应用程序漏洞和系统内核漏洞</strong>。相比于前两者，系统内核漏洞导致的逃逸危害更大、威胁更广。这是因为容器与宿主机共用一个内核，攻击者可以利用内核漏洞进行攻击，从而突破隔离“逃逸”至宿主机，对宿主机和其他容器造成了极大的安全威胁。</p>
+<h2 id="主要贡献">主要贡献</h2>
+<p>本文的主要贡献总结如下。</p>
+<ol>
+<li>首先调研并复现了 10 个利用内核漏洞（CVE-2016-5195、CVE-2017-7308、CVE-2017-11176、<br>
+CVE-2017-18344、CVE-2017-1000112、CVE-2018-18955、CVE-2020-14386、CVE-2021-22555、CVE-2022- 0185、CVE-2022-0847）的容器逃逸案例，对利用内核漏洞的容器逃逸流程进行建模，提炼出容器逃逸行为的主要观测点和基于“权限提升”的容器逃逸检测标准。</li>
+<li>利用 Linux 内核模块实现了对容器进程操作行为的捕获和进程属性信息的提取，进一步生成了进程起源图。</li>
+<li>提出异构观测的检测方法，基于容器进程起源图和观测点构建异构观测链，从多个角度对容器进程所执行的操作进行全生命周期的异构观测，检测是否有权限提升的情况。</li>
+<li>为了验证系统的有效性，选取 4 个具有代表性的容器逃逸内核漏洞，并与容器逃逸检测工具<br>
+NS-Detector 进行对比。其中，利用这 4 个漏洞实现的容器逃逸涵盖了本文总结出的两类逃逸方式：直接逃逸和间接逃逸。</li>
+</ol>
+<p><em>我的主要关注点在于：主要观测点有哪些？ 如何从多个角度对容器进程所执行的操作进行全生命周期的异构观测，进而检测权限提升</em></p>
+<h2 id="相关工作">相关工作</h2>
+<p>Lin 等提出的利用内核漏洞的提权一般包含 4 个步骤：绕过内核地址空间布局随机化（KASLR, kernel address space layout randomization）、绕过管理模式访问保护（SMAP supervisor mode access prevention）和管理模式执行保护SMEP，supervisor mode execution prevention、覆盖内核函数指针劫持控制流和调用内核函数 commit_creds()。</p>
+<p>Lin 等认为前 3 个步骤很难直接检测，所以提出通过检测进程是否调用函数 commit_creds()来阻止容器内进程的提权行为。但是，<strong>在实践中存在一些其他的内核提权方法，并不会通过调用函数 comm_cred()来进行提权</strong>。比如，攻击者可以利用 Linux 内核写时复制（copy-on-write）中的条件竞争漏洞，绕过虚拟动态共享对象（vDSO, virtual dynamic shared object）对进程内存权限的限制，漏洞利用代码（shellcode）注入 vDSO 实现提权并逃逸。</p>
+<p>Jian 等提出了一种基于进程所属namespaces状态变化的方案NS-Detector（namespaces<br>
+detector）来检测 Docker 容器的逃逸行为。Jian 等认为，当攻击者从容器中逃逸至宿主机并获得一个可控的 shell 时，该进程仍属于容器中进程的子进程，但其 namespaces 已突破容器与宿主机间的隔离，属于宿主机进程的 namespaces</p>
+<p>该方案主要存在 2 个缺陷：一是检测滞后性，因为容器逃逸通常在最后一步才会突破 namespaces 的隔离；二是检测失效性，攻击者在容器内利用内核漏洞提权并获得对宿主机目录操作权限后，可以通过服务 cron 创建定时任务的方式来获取一个反弹 shell，实现“间接”容器逃逸。此时，获得的可控 shell 与容器中进程无直接关系，该方案不能检测出此类型的容器逃逸。</p>
+<h2 id="预备知识">预备知识</h2>
+<p>当进程在内核态时，可以直接访问操作系统内核中与进程属性相关的数据结构。因此，攻击者可以利用内核漏洞劫持控制流来执行恶意代码修改容器进程与权限相关的数据结构，从而提升容器进程的权限，进一步实现逃逸<br>
+<img src="https://finleytang.github.io/post-images/1686122627693.png" alt="" loading="lazy"><br>
+<strong>task_struct</strong>：内核中与进程管理和控制相关最重要的数据结构。该结构体伴随进程整个生命周期，记录进程的当前状态以及控制进程运行的全部信息（打开的文件、信号量、进程状态、地址空间等）</p>
+<p><strong>cred</strong>：系统通过该结构体控制进程对其他资源的操作权限判定。当进程操作消息队列、共享内存和信息量等数据对象时，系统需要对进程的 euid、egid 进行检查；当进程执行文件相关的操作时，系统需要对进程的 fsuid、fsgid 进行检查。同时，Linux使用能力（capability）机制，以细粒度方式控制普通进程能否执行特权操作。例如，进程要挂载（mount）一个文件系统，那么进程需要有对应capability即 CAP_SYS_ADMIN。</p>
+<p><strong>fs_struct</strong>：用于描述进程的文件系统信息。结构体中的root和pwd分别代表进程的根目录和当前工作目录。</p>
+<p><strong>nsproxy</strong>：用于描述进程各个 namespaces 的状态。其中，pid namespaces 为进程提供了一个具有独立进程 ID 的运行环境。在每一个 pid namespaces 中，进程的 pid 从 1 开始编号，且和其他 pidnamespaces 中的 pid 互不影响。</p>
+<p><strong>根据逃逸后获取的 root 权限进程（shell）是否为容器中进程的子进程，将容器逃逸分为两类：直接逃逸和间接逃逸</strong></p>
+<p>直接逃逸在直接逃逸中，攻击者在劫持内核控制流之后一般会提升当前容器进程的权限，确保逃逸后可以获得 root 权限的进程。</p>
+<h2 id="检测示例">检测示例</h2>
+<h3 id="cve-2017-7308">CVE-2017-7308</h3>
+<p>该内核漏洞进一步实现容器逃逸的攻击流程如下：</p>
+<ol>
+<li>
+<p>通过/proc/kallsyms 或 syslog 的方式泄露内核函数地址来获得内核的加载基址，绕过内核KASLR 保护机制。</p>
+</li>
+<li>
+<p>构造堆布局触发内核处理环形缓冲区代码packet_set_ring()中的堆溢出漏洞。</p>
+</li>
+<li>
+<p>覆盖 packet_socket 结构体中的 retire_blk_timer 字段，使该字段中的函数指针 func 指向<br>
+native_write_cr4()。同时，覆盖该字段中的 data 为函数 native_write_cr4()的参数。若计时器超时，执行 native_write_cr4()来禁用 SMEP 和 SMAP。</p>
+</li>
+<li>
+<p>以同样的方式构造堆溢出，覆盖packet_sock中的 xmit 字段，使其指向攻击载荷函数 get_root_<br>
+payload()。</p>
+</li>
+<li>
+<p>在 get_root_payload() 函数中首先执行commit_creds()来提升容器内当前进程的权限；然后，执行 switch_task_namespaces()来切换容器内已提权进程的 namespaces，实现逃逸</p>
+</li>
+</ol>
+<p>攻击者通过运行逃逸攻击程序 exploit 获得一个 root 权限的进程（pid=3046）<br>
+<img src="https://finleytang.github.io/post-images/1686128688624.png" alt="" loading="lazy"></p>
+<p>由于获得的逃逸进程（pid=3046）是容器中进程（pid=3045）的子进程，且两者的 namespaces 不一致</p>
+<p><strong>权限提升了之后为什么还要切换namespaces , 不是直接可以访问其他namespaces的内容吗？</strong></p>
+<p>是的，提升权限之后本来就可以访问其他namespaces的内容了。但是，在容器逃逸攻击中，攻击者需要通过切换namespaces来实现从容器内部到宿主机操作系统的跨越，从而突破容器隔离环境，进一步实现逃逸。</p>
+<p>具体来说，当攻击者成功提升权限后，仍然处于容器内部的环境中，只能访问当前容器的资源和namespaces。如果要绕过容器隔离直接与宿主机系统交互，就需要将当前进程移动到宿主机的namespace中。因此，攻击者需要调用 switch_task_namespaces()函数来切换namespaces，将当前进程的命名空间更改为宿主机系统的命名空间，从而达到突破容器隔离的目的。</p>
+<p>总之，虽然在权限提升后攻击者已经具备了访问其他namespaces的能力，但是由于受限于容器隔离等因素，攻击者仍需通过切换namespaces等方式来实现进一步跨越隔离环境的操作</p>
+<h2 id="问题答疑">问题答疑</h2>
+<p><strong>通过/proc/kallsyms 或 syslog 的方式泄露内核函数地址来获得内核的加载基址，绕过内核<br>
+KASLR 保护机制，这个是如何做到的？</strong></p>
+<p>核地址空间随机化（KASLR）是一种保护机制，通过随机化内核的加载基址，来防止攻击者利用预先计算好的偏移量等方式来执行攻击。但是，如果攻击者能够泄露内核函数地址，就可以绕过KASLR保护机制，获取内核的加载基址，并在此基础上进行攻击。</p>
+<p>攻击者可以通过以下两种方式来泄露内核函数地址：</p>
+<p>通过/proc/kallsyms文件来获得内核函数地址：/proc/kallsyms是一个虚拟文件系统，提供了系统中所有已加载模块和内核符号表的信息。攻击者可以读取/proc/kallsyms文件，获取到内核中所有的函数地址并进行分析，从而找到相关漏洞入口点等。</p>
+<p>通过syslog方式来获得内核函数地址：攻击者可以通过打印内核日志的方式，将内核中关键函数的地址输出到系统日志中。然后再通过解析系统日志，获取这些地址信息，从而实现对内核的攻击。</p>
+<p>无论使用哪种方式，攻击者都可以通过泄露内核函数地址，获取内核的加载基址，并绕过KASLR保护机制，从而实现进一步攻击。因此，在使用Linux系统时，需要注意加强内核安全管理，避免内核漏洞的出现，同时也要注意加强日志监控和安全审计，及时发现泄露内核函数地址等问题。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE">主要贡献</a></li>
+<li><a href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C">相关工作</a></li>
+<li><a href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86">预备知识</a></li>
+<li><a href="#%E6%A3%80%E6%B5%8B%E7%A4%BA%E4%BE%8B">检测示例</a>
+<ul>
+<li><a href="#cve-2017-7308">CVE-2017-7308</a></li>
+</ul>
+</li>
+<li><a href="#%E9%97%AE%E9%A2%98%E7%AD%94%E7%96%91">问题答疑</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://finleytang.github.io/post/ce-shi-shi-yong-gridea/">
+              <h3 class="post-title">
+                测试使用Gridea
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://finleytang.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
