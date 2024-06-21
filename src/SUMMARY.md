@@ -1,9 +1,16 @@
 # Summary
 
-- [Unix Networking Program](./content/index.md)
-  - [Section 1.1](./content/section_1_1.md)
-  - [Section 1.2](./content/section_1_2.md)
-- [Chapter 2](./content/index.md)
-  - [Section 2.1](./content/section_2_1.md)
-  - [Section 2.2](./content/section_2_2.md)
-
+- [Part 1](./part_1/README.md)
+    - [Chapter 1](./part_1/chapter_1/README.md)
+        - [Section 1](./part_1/chapter_1/section_1.md)
+        - [Section 2](./part_1/chapter_1/section_2.md)
+    - [Chapter 2](./part_1/chapter_2/README.md)
+        - [Section 1](./part_1/chapter_2/section_1.md)
+        - [Section 2](./part_1/chapter_2/section_2.md)
+- [Part 2](./part_2/README.md)
+    - [Chapter 1](./part_2/chapter_1/README.md)
+        - [Section 1](./part_2/chapter_1/section_1.md)
+        - [Section 2](./part_2/chapter_1/section_2.md)
+    - [Chapter 2](./part_2/chapter_2/README.md)
+        - [Section 1](./part_2/chapter_2/section_1.md)
+        - [Section 2](./part_2/chapter_2/section_2.md)

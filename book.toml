@@ -1,7 +1,0 @@
-[book]
-title = "My Learning Note"
-author = "Finley"
-
-[output.html]
-default-theme = "light"
-
