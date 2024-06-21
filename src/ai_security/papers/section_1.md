@@ -1,14 +1,14 @@
-# SECGPT: An Execution Isolation Architecture for LLM-Based Systems
+## SECGPT: An Execution Isolation Architecture for LLM-Based Systems
 
 
-# 链接
+### 链接
 [SECGPT: An Execution Isolation Architecture for LLM-Based Systems](https://arxiv.org/pdf/2403.04960)
 
-# 简要内容概况
+### 简要内容概况
 本文提出了SECGPT，一种针对基于大型语言模型（LLM）的系统执行隔离架构。随着LLM的扩展，例如ChatGPT，它们开始支持第三方应用程序，这些应用程序利用自然语言进行自动化执行，但存在安全和隐私风险。SECGPT的核心思想是通过隔离应用程序的执行和更精确地调节它们在隔离环境外的交互来减轻这些风险。
 
-# 重点内容解读
-### 关键技术点
+### 重点内容解读
+#### 关键技术点
 - **执行隔离**：SECGPT将每个应用程序在隔离环境中执行，以减少它们之间的潜在攻击面。
 - **精确交互**：通过一个名为hub的中央可信接口来管理应用程序间的交互，确保交互在用户授权下进行。
 - **hub-and-spoke架构**：SECGPT采用hub-and-spoke架构，hub作为中心节点，spoke代表隔离的应用程序实例。
