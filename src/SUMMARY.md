@@ -18,3 +18,6 @@
         - [Java 和 Kotlin 中的类型](./codeql/advance/section_3.md)
         - [Java 和 Kotlin 中容易溢出的比较](./codeql/advance/section_4.md)
         - [导航 Java 和 Kotlin 的调用图](./codeql/advance/section_5.md)
+- [ai_security](./ai_security/README.md)
+    - [论文](./ai_security/papers/README.md)
+        - [环境搭建](./ai_security/papers/section_1.md)

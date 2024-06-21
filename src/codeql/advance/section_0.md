@@ -39,3 +39,30 @@ fun myKotlinFun(s: String) {
 - 可选地，如果存储库有多个 CodeQL 数据库可用，请选择 java 以下载由 Java/Kotlin 代码创建的数据库。
 
 Visual Studio Code 右下角将显示数据库下载进度的信息。下载完成后，数据库将在 CodeQL 扩展的 Databases 部分显示一个勾号（见下面的截图）。
+
+
+### 运行快速查询
+Visual Studio Code 的 CodeQL 扩展添加了几个 CodeQL: 命令到命令面板，包括 Quick Query，您可以使用它在没有任何设置的情况下运行查询。
+
+从 Visual Studio Code 的命令面板中，选择 CodeQL: Quick Query。
+
+片刻之后，将打开一个新的标签页 quick-query.ql，准备让您为当前选定的 CodeQL 数据库（这里是一个 java 数据库）编写查询。如果您被提示重新加载工作区为多文件夹工作区以允许快速查询，请接受或使用启动工作流创建一个新的工作区。
+
+在快速查询标签页中，删除选择 "" 并在 import 语句 import java 下面粘贴以下查询：
+
+```
+from MethodAccess ma
+where
+    ma.getMethod().hasName("equals") and
+    ma.getArgument(0).(StringLiteral).getValue() = ""
+select ma, "This comparison to empty string is inefficient, use isEmpty() instead."
+```
+
+
+
+![alt text](image.png)
+查询结果如下：
+
+![alt text](image-1.png)
+
+
