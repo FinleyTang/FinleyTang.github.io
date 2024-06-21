@@ -4,3 +4,4 @@ author = "Author Name"
 
 [output.html]
 default-theme = "light"
+
