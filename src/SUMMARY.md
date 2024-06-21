@@ -1,9 +1,9 @@
 # Summary
 
-- [Chapter 1](./chapter_1/index.md)
-  - [Section 1.1](./chapter_1/section_1_1.md)
-  - [Section 1.2](./chapter_1/section_1_2.md)
-- [Chapter 2](./chapter_2/index.md)
-  - [Section 2.1](./chapter_2/section_2_1.md)
-  - [Section 2.2](./chapter_2/section_2_2.md)
+- [Unix Networking Program](./content/index.md)
+  - [Section 1.1](./content/section_1_1.md)
+  - [Section 1.2](./content/section_1_2.md)
+- [Chapter 2](./content/index.md)
+  - [Section 2.1](./content/section_2_1.md)
+  - [Section 2.2](./content/section_2_2.md)
 

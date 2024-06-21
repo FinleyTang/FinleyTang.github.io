@@ -1,6 +1,6 @@
 [book]
-title = "My mdBook Project"
-author = "Author Name"
+title = "My Learning Note"
+author = "Finley"
 
 [output.html]
 default-theme = "light"

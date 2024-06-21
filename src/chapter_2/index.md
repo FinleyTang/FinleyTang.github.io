@@ -1,4 +1,0 @@
-# Chapter 2
-
-Introduction to Chapter 2.
-
