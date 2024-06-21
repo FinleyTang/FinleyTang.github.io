@@ -1,0 +1,6 @@
+[book]
+title = "My mdBook Project"
+author = "Author Name"
+
+[output.html]
+default-theme = "light"
