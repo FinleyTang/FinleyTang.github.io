@@ -23,4 +23,7 @@
         - [SECGPT: An Execution Isolation Architecture for LLM-Based Systems](./papers/ai_security/section_1.md)
         - [A New Era in LLM Security: Exploring Security Concerns in Real-World LLM-based Systems](./papers/ai_security/section_2.md)
         - [LLM-Assisted Static Analysis for Detecting Security Vulnerabilities](./papers/ai_security/section_3.md)
+        - [MITIGATING DOCKER SECURITY ISSUES](./papers/ai_security/section_4.md)
 
+    - [docker_security](./papers/docker_security/README.md)
+        - [SECGPT: An Execution Isolation Architecture for LLM-Based Systems](./papers/docker_security/section_1.md)
