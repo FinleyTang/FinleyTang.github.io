@@ -20,4 +20,4 @@
         - [导航 Java 和 Kotlin 的调用图](./codeql/advance/section_5.md)
 - [ai_security](./ai_security/README.md)
     - [论文](./ai_security/papers/README.md)
-        - [环境搭建](./ai_security/papers/section_1.md)
+        - [SECGPT: An Execution Isolation Architecture for LLM-Based Systems](./ai_security/papers/section_1.md)
