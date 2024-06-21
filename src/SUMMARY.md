@@ -27,3 +27,5 @@
         - [MITIGATING DOCKER SECURITY ISSUES](./papers/docker_security/section_1.md)
         - [A State-of-Art Review of Docker Container Security Issues and Solutions](./papers/docker_security/section_2.md)
         - [Docker Security: Using Containers Safely in Production](./papers/docker_security/section_3.md)
+        - [Understanding the Security Risks of Docker Hub](./papers/docker_security/section_4.md)
+        - [A Study of Security Vulnerabilities on Docker Hub](./papers/docker_security/section_5.md)
