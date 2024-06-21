@@ -22,5 +22,5 @@
     - [论文](./ai_security/papers/README.md)
         - [SECGPT: An Execution Isolation Architecture for LLM-Based Systems](./ai_security/papers/section_1.md)
         - [A New Era in LLM Security: Exploring Security Concerns in Real-World LLM-based Systems](./ai_security/papers/section_2.md)
-        - [LLM-Assisted Static Analysis for Detecting Security Vulnerabilities](./ai_security/papers/section_2.md)
+        - [LLM-Assisted Static Analysis for Detecting Security Vulnerabilities](./ai_security/papers/section_3.md)
 
