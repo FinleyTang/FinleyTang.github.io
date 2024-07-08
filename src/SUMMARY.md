@@ -42,3 +42,5 @@
     - [waf](./mylab/WAF/readme.md)
         - [waf-demo-php](./mylab/WAF/waf-demo.md)
         - [waf-demo-python](./mylab/WAF/waf-demo-flask.md)
+    - [ml](./mylab/ai/readme.md)
+        - [ml-basics-01](./mylab/ai/basics/section_01.md)
