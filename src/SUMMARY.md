@@ -33,3 +33,12 @@
         - [Docker Security: Using Containers Safely in Production](./papers/docker_security/section_3.md)
         - [Understanding the Security Risks of Docker Hub](./papers/docker_security/section_4.md)
         - [A Study of Security Vulnerabilities on Docker Hub](./papers/docker_security/section_5.md)
+
+- [mylab](./mylab/readme.md)
+    - [kvm](./mylab/KVM/readme.md)
+        - [create-vm-flow](./mylab/KVM/pics/kvm-create-vm.md)
+    - [optee](./mylab/optee/readme.md)
+        - [optee-flow](./mylab/optee/pics/CA&TA.md)
+    - [waf](./mylab/WAF/readme.md)
+        - [waf-demo-php](./mylab/WAF/waf-demo.md)
+        - [waf-demo-python](./mylab/WAF/waf-demo-flask.md)
